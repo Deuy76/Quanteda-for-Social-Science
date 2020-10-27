@@ -265,35 +265,35 @@ tf.idf <- function(x, idf) {
   x * idf
 }
 
-# 1차 step, normalize all documents via TF.
+# 1st step, normalize all documents via TF.
 Mining.TXT.token.df <- apply(Mining.TXT.token.matrix, 1, term.frequency)
 dim(Mining.TXT.token.df)
 View(Mining.TXT.token.df)
 
-# 2차 step,IDF vector를 연산
+# 2nd step,IDF culculate vector
 # for training data and for test data!
 Mining.TXT.token.idf <- apply(Mining.TXT.token.matrix, 2, inverse.doc.freq)
 str(Mining.TXT.token.idf)
 
 
-# 최종적으로 corpus를 학습하기 위해 TF-IDF를 training
+# Traning TF-IDF to get final copus traning
 Mining.TXT.token.tfidf <-  apply(Mining.TXT.token.df, 2, tf.idf, idf = Mining.TXT.token.idf)
 dim(Mining.TXT.token.tfidf)
 View(Mining.TXT.token.tfidf)
 
 
-# matrix로 전환
+# Convert to matrix
 Mining.TXT.token.tfidf <- t(Mining.TXT.token.tfidf)
 dim(Mining.TXT.token.tfidf)
 View(Mining.TXT.token.tfidf)
 
 
-# 미진한 부분 체크
+# Check imcomplete cases
 incomplete.cases <- which(!complete.cases(Mining.TXT.token.tfidf))
 Mining.TXT.token$text1[incomplete.cases]
 
 
-# 미진한 부분 수정
+# Touch imcompleted cases
 Mining.TXT.token.tfidf[incomplete.cases,] <- rep(0.0, ncol(Mining.TXT.token.tfidf))
 dim(Mining.TXT.token.tfidf)
 sum (which(!complete.cases (Mining.TXT.token.tfidf)))
@@ -307,14 +307,14 @@ Mining.TXT.token.dfm<-dfm_select(Mining.TXT.token.dfm, min_nchar=3)
 
 
 # =======================================
-# 상대 빈도 분석
+# Mutual Frequency Analysys
 # =======================================
 #key <- textstat_keyness(Mining.TXT.token.dfm)
 #head(key, 10) %>% knitr::kable()
 
 
 # =======================================
-# 빈도 그래프 만들기
+# Frequency Plot
 # =======================================
 
 
@@ -329,17 +329,17 @@ ggplot(Mining.TXT.token.dfm.inaug, aes(x =feature, y = frequency)) +
 
 
 # =======================================
-# Co-occurrences Network 만들기
+# Create Co-occurrences Network 
 # =======================================
 
-# 만들어진 dfm을 이용
+# Using prior dfm
 Mining.TXT.textplot.Network <- fcm(Mining.TXT.token.dfm)
-Mining.TXT.textplot.Network <- fcm(Mining.TXT.token.dfm, tri = FALSE) # Co-occurance Network 작성
-feat <- names(topfeatures(Mining.TXT.textplot.Network, 50)) # 가장 빈도가 높은 Co-occurance를 선택
+Mining.TXT.textplot.Network <- fcm(Mining.TXT.token.dfm, tri = FALSE) # Create Co-occurance Network
+feat <- names(topfeatures(Mining.TXT.textplot.Network, 50)) # Setting a top features for the Co-occurance
 set.seed(100)
 Mining.TXT.textplot.Network <- fcm_select(Mining.TXT.textplot.Network, feat, verbose = FALSE)
 
-# CON 그리기
+# Plot CON
 
 textplot_network(Mining.TXT.textplot.Network,
                  vertex_labelsize = 2.5 * rowSums(Mining.TXT.textplot.Network)/
@@ -351,17 +351,18 @@ textplot_network(Mining.TXT.textplot.Network,
 
 
 # =======================================
-# Topic Model 만들기 
+# Create Topic Model
 # =======================================
 
 Topic.Model <- textmodel_lda(Mining.TXT.token.dfm, k = 5)
 Topic.Model <- data.frame(terms(Topic.Model, 10))
 Topic.Model
+
 # =======================================
-# Word Cloud 만들기
+# Create Word Cloud
 # =======================================
 
-# Word Cloud 만들기
+# Word Cloud
 #wordcloud.results <- textplot_wordcloud(Mining.TXT.token.dfm, min_count = 10, random_order = FALSE,
 #                                        rotation = .25, color = RColorBrewer::brewer.pal(8,"Dark2"))
 
@@ -392,7 +393,7 @@ summary(Text.source)
 #====================================#
 #====================================
 # File Loading 
-# 파일 읽어드리기
+
 #====================================
 
 # Summary
